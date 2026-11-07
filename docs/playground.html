@@ -1,1 +1,63 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Playground — KalyaDB</title><link rel="stylesheet" href="assets/style.css"></head><body><header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">K</span><span>Kalya<span class="muted">DB</span></span></a><nav><a href="architecture.html">Architecture</a><a href="roadmap.html">Roadmap</a><a href="playground.html">Playground</a><a class="github-link" href="https://github.com/Kalya-org/KalyaDB">GitHub ↗</a></nav></header><main class="content"><div class="eyebrow">EXPERIMENTAL SPACE</div><h1>Playground</h1><p>Use this page to jot down a possible future query or command. This is only a text scratchpad: there is no KalyaDB engine behind it, and nothing is executed or saved.</p><div class="callout">⚠ Prototype placeholder — query syntax has not been selected yet.</div><div class="playground"><label for="query"><strong>Draft a future query</strong></label><textarea id="query" spellcheck="false" placeholder="Write a query idea here…"></textarea><button id="clear" type="button">Clear scratchpad</button><output id="message" aria-live="polite">Nothing has been run. This page does not execute database commands.</output></div></main><footer><span>© 2026 KalyaDB contributors</span><span>MIT License</span></footer><script src="assets/playground.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Try experimental KalyaDB SQL commands directly in your browser.">
+  <title>Playground — KalyaDB</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .sql-console{display:grid;gap:1rem;margin-top:1.5rem}
+    .sql-toolbar{display:flex;flex-wrap:wrap;gap:.65rem;align-items:center}
+    .sql-toolbar button,.sql-actions button{border:1px solid var(--border,#34344a);border-radius:8px;padding:.65rem 1rem;background:#202034;color:inherit;cursor:pointer}
+    .sql-toolbar button.primary{background:#7657e8;border-color:#7657e8;color:white}
+    .sql-editor{width:100%;min-height:230px;resize:vertical;padding:1rem;border:1px solid var(--border,#34344a);border-radius:10px;background:#10101b;color:#e9e7ff;font:14px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:2}
+    .sql-output{min-height:120px;padding:1rem;border:1px solid var(--border,#34344a);border-radius:10px;background:#10101b;overflow:auto}
+    .sql-output table{width:100%;border-collapse:collapse}
+    .sql-output th,.sql-output td{text-align:left;padding:.55rem .75rem;border-bottom:1px solid #34344a}
+    .sql-output th{color:#bcb1ff}
+    .sql-status{color:#b7b4c9;font-size:.92rem}
+    .sql-status.error{color:#ff9c9c}
+    .sql-status.success{color:#8fe0b3}
+    .sql-note{font-size:.9rem;color:#b7b4c9}
+    .sql-section-title{margin:0 0 .55rem}
+    .sql-toolbar button:disabled{opacity:.55;cursor:wait}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">K</span><span>Kalya<span class="muted">DB</span></span></a>
+    <nav><a href="architecture.html">Architecture</a><a href="roadmap.html">Roadmap</a><a href="playground.html">Playground</a><a class="github-link" href="https://github.com/Kalya-org/KalyaDB">GitHub ↗</a></nav>
+  </header>
+  <main class="content">
+    <div class="eyebrow">EXPERIMENTAL SQL CONSOLE</div>
+    <h1>KalyaDB Playground</h1>
+    <p>Write and run SQL against the experimental C++ KalyaDB engine compiled to WebAssembly. Commands run locally in this browser tab.</p>
+    <div class="callout">⚠ Prototype: this playground supports one text value per row. The temporary database lives in browser memory and resets when you reload the page. Do not enter sensitive information.</div>
+
+    <section class="sql-console" aria-label="SQL console">
+      <div>
+        <h2 class="sql-section-title">SQL editor</h2>
+        <textarea id="query" class="sql-editor" spellcheck="false" aria-label="SQL query editor">CREATE TABLE users;
+INSERT INTO users VALUES ('Ada');
+INSERT INTO users VALUES ('Grace Hopper');
+SELECT * FROM users;</textarea>
+      </div>
+      <div class="sql-toolbar">
+        <button id="run" class="primary" type="button" disabled>Loading engine…</button>
+        <button id="example" type="button">Load example</button>
+        <button id="clear" type="button">Clear editor</button>
+        <button id="reset" type="button">Reset database</button>
+      </div>
+      <p id="status" class="sql-status" role="status" aria-live="polite">Loading KalyaDB WebAssembly engine…</p>
+      <div>
+        <h2 class="sql-section-title">Results</h2>
+        <div id="output" class="sql-output" aria-live="polite">Waiting for a SQL command.</div>
+      </div>
+      <p class="sql-note">Run one statement at a time. Supported commands: CREATE TABLE name; INSERT INTO name VALUES ('text'); SELECT * FROM name;. Use doubled apostrophes inside text, like 'O''Reilly'.</p>
+    </section>
+  </main>
+  <footer><span>© 2026 KalyaDB contributors</span><span>MIT License</span></footer>
+  <script type="module" src="assets/playground.js"></script>
+</body>
+</html>
