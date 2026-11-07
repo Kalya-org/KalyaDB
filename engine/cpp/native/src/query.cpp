@@ -113,18 +113,18 @@ private:
 
     std::string string_literal() {
         skip_space();
-        expect(''');
+        expect(static_cast<char>(39));
         std::string value;
 
         while (position_ < input_.size()) {
             const char current = input_[position_++];
-            if (current != ''') {
+            if (current != static_cast<char>(39)) {
                 value.push_back(current);
                 continue;
             }
 
-            if (position_ < input_.size() && input_[position_] == ''') {
-                value.push_back(''');
+            if (position_ < input_.size() && input_[position_] == static_cast<char>(39)) {
+                value.push_back(static_cast<char>(39));
                 ++position_;
                 continue;
             }
