@@ -9,7 +9,7 @@
   <style>
     .sql-console{display:grid;gap:1rem;margin-top:1.5rem}
     .sql-toolbar{display:flex;flex-wrap:wrap;gap:.65rem;align-items:center}
-    .sql-toolbar button,.sql-actions button{border:1px solid var(--border,#34344a);border-radius:8px;padding:.65rem 1rem;background:#202034;color:inherit;cursor:pointer}
+    .sql-toolbar button{border:1px solid var(--border,#34344a);border-radius:8px;padding:.65rem 1rem;background:#202034;color:inherit;cursor:pointer}
     .sql-toolbar button.primary{background:#7657e8;border-color:#7657e8;color:white}
     .sql-editor{width:100%;min-height:230px;resize:vertical;padding:1rem;border:1px solid var(--border,#34344a);border-radius:10px;background:#10101b;color:#e9e7ff;font:14px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:2}
     .sql-output{min-height:120px;padding:1rem;border:1px solid var(--border,#34344a);border-radius:10px;background:#10101b;overflow:auto}
@@ -33,7 +33,7 @@
     <div class="eyebrow">EXPERIMENTAL SQL CONSOLE</div>
     <h1>KalyaDB Playground</h1>
     <p>Write and run SQL against the experimental C++ KalyaDB engine compiled to WebAssembly. Commands run locally in this browser tab.</p>
-    <div class="callout">⚠ Prototype: this playground supports one text value per row. The temporary database lives in browser memory and resets when you reload the page. Do not enter sensitive information.</div>
+    <div class="callout">⚠ Prototype: this playground supports one text value per row. Your database is saved in this browser using IndexedDB and normally survives page reloads. Clearing this site's browser data, using private browsing, or changing browsers/devices can remove or separate the saved database. Do not enter sensitive information.</div>
 
     <section class="sql-console" aria-label="SQL console">
       <div>
@@ -54,7 +54,7 @@ SELECT * FROM users;</textarea>
         <h2 class="sql-section-title">Results</h2>
         <div id="output" class="sql-output" aria-live="polite">Waiting for a SQL command.</div>
       </div>
-      <p class="sql-note">Run one statement at a time. Supported commands: CREATE TABLE name; INSERT INTO name VALUES ('text'); SELECT * FROM name;. Use doubled apostrophes inside text, like 'O''Reilly'.</p>
+      <p class="sql-note">Supported commands: CREATE TABLE name; INSERT INTO name VALUES ('text'); SELECT * FROM name;. Use doubled apostrophes inside text, like 'O''Reilly'. Press Ctrl+Enter to run the script.</p>
     </section>
   </main>
   <footer><span>© 2026 KalyaDB contributors</span><span>MIT License</span></footer>
