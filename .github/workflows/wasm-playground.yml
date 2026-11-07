@@ -1,0 +1,62 @@
+name: Build KalyaDB WebAssembly Playground
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "engine/cpp/native/**"
+      - "docs/playground.html"
+      - "docs/assets/playground.js"
+      - ".github/workflows/wasm-playground.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kalyadb-wasm-playground
+  cancel-in-progress: true
+
+jobs:
+  build-wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: latest
+          actions-cache-folder: emsdk-cache
+
+      - name: Build browser engine
+        run: |
+          em++ \
+            engine/cpp/native/src/version.cpp \
+            engine/cpp/native/src/storage.cpp \
+            engine/cpp/native/src/tables.cpp \
+            engine/cpp/native/src/query.cpp \
+            engine/cpp/native/src/wasm_api.cpp \
+            -I engine/cpp/native/include \
+            -std=c++17 -O2 \
+            -lembind \
+            -sEXPORT_ES6=1 \
+            -sMODULARIZE=1 \
+            -sENVIRONMENT=web \
+            -sALLOW_MEMORY_GROWTH=1 \
+            -sFORCE_FILESYSTEM=1 \
+            -sDISABLE_EXCEPTION_CATCHING=0 \
+            -o docs/assets/kalyadb.js
+
+      - name: Commit generated WebAssembly files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/assets/kalyadb.js docs/assets/kalyadb.wasm
+          if git diff --cached --quiet; then
+            echo "WebAssembly output is already up to date."
+          else
+            git commit -m "Build KalyaDB WebAssembly playground"
+            git push
+          fi
