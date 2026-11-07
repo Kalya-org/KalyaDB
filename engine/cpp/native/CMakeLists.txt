@@ -9,6 +9,7 @@ project(KalyaDBNative
 add_library(kalyadb_native STATIC
     src/version.cpp
     src/storage.cpp
+    src/tables.cpp
 )
 
 target_include_directories(kalyadb_native
@@ -36,4 +37,8 @@ if(BUILD_TESTING)
     )
     target_link_libraries(kalyadb_storage_test PRIVATE kalyadb_native)
     add_test(NAME kalyadb.storage COMMAND kalyadb_storage_test)
+
+    add_executable(kalyadb_tables_test tests/tables_test.cpp)
+    target_link_libraries(kalyadb_tables_test PRIVATE kalyadb_native)
+    add_test(NAME kalyadb.tables COMMAND kalyadb_tables_test)
 endif()
