@@ -6,7 +6,12 @@ const resetButton = document.querySelector("#reset");
 const status = document.querySelector("#status");
 const output = document.querySelector("#output");
 
+const DATABASE_PATH = "/kalya-playground.kdb";
+const IDB_NAME = "KalyaDBPlayground";
+const IDB_STORE = "databases";
+const IDB_KEY = "default";
 let engine = null;
+let persistenceReady = false;
 
 const exampleSql = `CREATE TABLE users;
 INSERT INTO users VALUES ('Ada');
@@ -16,6 +21,48 @@ SELECT * FROM users;`;
 function setStatus(message, kind = "") {
   status.textContent = message;
   status.className = `sql-status ${kind}`.trim();
+}
+
+function openDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(IDB_NAME, 1);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains(IDB_STORE)) {
+        request.result.createObjectStore(IDB_STORE);
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error("Could not open browser storage."));
+  });
+}
+
+async function withStore(mode, operation) {
+  const database = await openDatabase();
+  try {
+    return await new Promise((resolve, reject) => {
+      const transaction = database.transaction(IDB_STORE, mode);
+      const request = operation(transaction.objectStore(IDB_STORE));
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error("Browser storage operation failed."));
+      transaction.onabort = () => reject(transaction.error || new Error("Browser storage transaction was aborted."));
+    });
+  } finally {
+    database.close();
+  }
+}
+
+async function restoreDatabase() {
+  const savedBytes = await withStore("readonly", store => store.get(IDB_KEY));
+  if (savedBytes) {
+    engine.FS.writeFile(DATABASE_PATH, new Uint8Array(savedBytes));
+    return true;
+  }
+  return false;
+}
+
+async function persistDatabase() {
+  const bytes = engine.FS.readFile(DATABASE_PATH);
+  await withStore("readwrite", store => store.put(bytes, IDB_KEY));
 }
 
 function renderRows(rows) {
@@ -75,12 +122,13 @@ function splitStatements(script) {
   return statements;
 }
 
-function runSql() {
+async function runSql() {
   if (!engine) {
     setStatus("The WebAssembly engine is not ready yet.", "error");
     return;
   }
 
+  runButton.disabled = true;
   try {
     const statements = splitStatements(editor.value);
     if (statements.length === 0) {
@@ -97,6 +145,14 @@ function runSql() {
         output.textContent = "Execution stopped at the first error. Earlier statements in this script may already have completed.";
         return;
       }
+      if (persistenceReady) {
+        try {
+          await persistDatabase();
+        } catch (error) {
+          persistenceReady = false;
+          setStatus(`SQL ran, but browser persistence failed: ${error.message}. Data may be lost on reload.`, "error");
+        }
+      }
       if (/^\s*SELECT\b/i.test(statements[i])) {
         lastRows = result.rows;
         selectedRows = true;
@@ -105,10 +161,16 @@ function runSql() {
 
     if (selectedRows) renderRows(lastRows);
     else output.textContent = "Statements completed. Run a SELECT statement to display rows.";
-    setStatus(`${statements.length} statement(s) executed successfully.`, "success");
+    if (persistenceReady) {
+      setStatus(`${statements.length} statement(s) executed and saved in this browser.`, "success");
+    } else {
+      setStatus(`${statements.length} statement(s) executed in temporary memory only.`, "error");
+    }
   } catch (error) {
     setStatus(error.message || "Unexpected engine error.", "error");
     output.textContent = "The SQL script could not be executed.";
+  } finally {
+    runButton.disabled = !engine;
   }
 }
 
@@ -123,11 +185,19 @@ exampleButton.addEventListener("click", () => {
   editor.focus();
   setStatus("Example loaded. Press Run SQL to execute all four statements.");
 });
-resetButton.addEventListener("click", () => {
+resetButton.addEventListener("click", async () => {
   if (!engine) return;
-  engine.resetDatabase();
-  renderRows([]);
-  setStatus("Temporary database reset.", "success");
+  resetButton.disabled = true;
+  try {
+    engine.resetDatabase();
+    if (persistenceReady) await persistDatabase();
+    renderRows([]);
+    setStatus("Database reset. The empty database has been saved.", "success");
+  } catch (error) {
+    setStatus(`Database reset, but saving failed: ${error.message}`, "error");
+  } finally {
+    resetButton.disabled = false;
+  }
 });
 
 editor.addEventListener("keydown", (event) => {
@@ -140,9 +210,18 @@ editor.addEventListener("keydown", (event) => {
 try {
   const { default: createKalyaDB } = await import("./kalyadb.js");
   engine = await createKalyaDB();
+  try {
+    const restored = await restoreDatabase();
+    persistenceReady = true;
+    setStatus(restored
+      ? "KalyaDB ready. Your saved browser database has been restored."
+      : "KalyaDB ready. Browser persistence is enabled; run SQL to create saved data.", "success");
+  } catch (storageError) {
+    persistenceReady = false;
+    setStatus(`KalyaDB ready, but browser storage is unavailable: ${storageError.message}. Data will be temporary.`, "error");
+  }
   runButton.disabled = false;
   runButton.textContent = "Run SQL";
-  setStatus("KalyaDB engine ready. You can run a multi-statement SQL script.", "success");
 } catch (error) {
   runButton.textContent = "Engine unavailable";
   setStatus("Could not load the WebAssembly engine. The build may still be running; refresh this page after GitHub Actions finishes.", "error");
