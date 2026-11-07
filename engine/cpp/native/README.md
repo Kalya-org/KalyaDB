@@ -1,18 +1,24 @@
 # KalyaDB Native Core (C++)
 
-This directory contains the first experimental native database components.
+This directory contains the experimental native database engine.
 
 ## Current prototype
 
-The storage API can:
+The native API can:
 
 - Create a `.kdb` file with a format signature and format version.
-- Append length-prefixed records.
-- Reopen a file and read records in insertion order.
+- Append length-prefixed records and read them in insertion order.
 - Create named tables, list them, insert table records, and read them in insertion order.
-- Reject invalid headers, unsupported format versions, oversized records, and truncated records.
+- Execute a small SQL subset:
+  - `CREATE TABLE users;`
+  - `INSERT INTO users VALUES ('Ada');`
+  - `SELECT * FROM users;`
+- Accept SQL keywords in either upper- or lowercase.
+- Read single-quoted text values; doubled apostrophes represent an apostrophe (for example, `'O''Reilly'`).
 
-The current record limit is 1 MiB. The file format is experimental and may change before a stable release. Table metadata and rows are currently stored as reserved records in the append-only log; this is an early prototype, not a final table/page format. The engine does not yet provide queries, indexes, transactions, concurrency control, crash recovery, or encryption. Do not use it for important or sensitive data.
+The current SQL prototype stores one text value per row. It does not yet support column definitions, data types, multiple values per row, filtering, updates, deletes, joins, indexes, transactions, concurrency control, crash recovery, or encryption.
+
+The current record limit is 1 MiB and table names are limited to 255 bytes. Table metadata and rows are currently stored as reserved records in the append-only log; this is an early prototype, not a final table/page format. The file format is experimental and may change before a stable release. Do not use it for important or sensitive data.
 
 ## Build and test
 
