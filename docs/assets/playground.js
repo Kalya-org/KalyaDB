@@ -46,26 +46,69 @@ function renderRows(rows) {
   output.append(table);
 }
 
+// Split a script on semicolons without splitting semicolons inside quoted text.
+function splitStatements(script) {
+  const statements = [];
+  let current = "";
+  let inString = false;
+
+  for (let i = 0; i < script.length; i += 1) {
+    const char = script[i];
+    current += char;
+
+    if (char === "'") {
+      if (inString && script[i + 1] === "'") {
+        current += script[i + 1];
+        i += 1;
+      } else {
+        inString = !inString;
+      }
+    } else if (char === ";" && !inString) {
+      const statement = current.slice(0, -1).trim();
+      if (statement) statements.push(statement);
+      current = "";
+    }
+  }
+
+  if (inString) throw new Error("Unterminated quoted text in SQL script.");
+  if (current.trim()) statements.push(current.trim());
+  return statements;
+}
+
 function runSql() {
   if (!engine) {
     setStatus("The WebAssembly engine is not ready yet.", "error");
     return;
   }
 
-  const sql = editor.value.trim();
-  if (!sql) {
-    setStatus("Enter a SQL statement first.", "error");
-    return;
-  }
-
   try {
-    const result = engine.executeSql(sql);
-    setStatus(result.message, result.ok ? "success" : "error");
-    if (result.ok) renderRows(result.rows);
-    else output.textContent = "The statement could not be executed.";
+    const statements = splitStatements(editor.value);
+    if (statements.length === 0) {
+      setStatus("Enter a SQL statement first.", "error");
+      return;
+    }
+
+    let lastRows = [];
+    let selectedRows = false;
+    for (let i = 0; i < statements.length; i += 1) {
+      const result = engine.executeSql(statements[i]);
+      if (!result.ok) {
+        setStatus(`Statement ${i + 1} failed: ${result.message}`, "error");
+        output.textContent = "Execution stopped at the first error. Earlier statements in this script may already have completed.";
+        return;
+      }
+      if (/^\\s*SELECT\\b/i.test(statements[i])) {
+        lastRows = result.rows;
+        selectedRows = true;
+      }
+    }
+
+    if (selectedRows) renderRows(lastRows);
+    else output.textContent = "Statements completed. Run a SELECT statement to display rows.";
+    setStatus(`${statements.length} statement(s) executed successfully.`, "success");
   } catch (error) {
     setStatus(error.message || "Unexpected engine error.", "error");
-    output.textContent = "The statement could not be executed.";
+    output.textContent = "The SQL script could not be executed.";
   }
 }
 
@@ -78,7 +121,7 @@ clearButton.addEventListener("click", () => {
 exampleButton.addEventListener("click", () => {
   editor.value = exampleSql;
   editor.focus();
-  setStatus("Example loaded. Run each statement separately, from top to bottom.");
+  setStatus("Example loaded. Press Run SQL to execute all four statements.");
 });
 resetButton.addEventListener("click", () => {
   if (!engine) return;
@@ -99,7 +142,7 @@ try {
   engine = await createKalyaDB();
   runButton.disabled = false;
   runButton.textContent = "Run SQL";
-  setStatus("KalyaDB engine ready. Run one statement at a time.", "success");
+  setStatus("KalyaDB engine ready. You can run a multi-statement SQL script.", "success");
 } catch (error) {
   runButton.textContent = "Engine unavailable";
   setStatus("Could not load the WebAssembly engine. The build may still be running; refresh this page after GitHub Actions finishes.", "error");
