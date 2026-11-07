@@ -97,7 +97,7 @@ function runSql() {
         output.textContent = "Execution stopped at the first error. Earlier statements in this script may already have completed.";
         return;
       }
-      if (/^\\s*SELECT\\b/i.test(statements[i])) {
+      if (/^\s*SELECT\b/i.test(statements[i])) {
         lastRows = result.rows;
         selectedRows = true;
       }
