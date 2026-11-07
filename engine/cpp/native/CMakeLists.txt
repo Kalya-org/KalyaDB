@@ -20,3 +20,13 @@ target_compile_features(kalyadb_native PUBLIC cxx_std_17)
 set_target_properties(kalyadb_native PROPERTIES
     CXX_EXTENSIONS OFF
 )
+
+include(CTest)
+
+if(BUILD_TESTING)
+    add_executable(kalyadb_version_test
+        tests/version_test.cpp
+    )
+    target_link_libraries(kalyadb_version_test PRIVATE kalyadb_native)
+    add_test(NAME kalyadb.version COMMAND kalyadb_version_test)
+endif()
