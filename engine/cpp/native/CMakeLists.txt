@@ -10,6 +10,7 @@ add_library(kalyadb_native STATIC
     src/version.cpp
     src/storage.cpp
     src/tables.cpp
+    src/query.cpp
 )
 
 target_include_directories(kalyadb_native
@@ -41,4 +42,8 @@ if(BUILD_TESTING)
     add_executable(kalyadb_tables_test tests/tables_test.cpp)
     target_link_libraries(kalyadb_tables_test PRIVATE kalyadb_native)
     add_test(NAME kalyadb.tables COMMAND kalyadb_tables_test)
+
+    add_executable(kalyadb_query_test tests/query_test.cpp)
+    target_link_libraries(kalyadb_query_test PRIVATE kalyadb_native)
+    add_test(NAME kalyadb.query COMMAND kalyadb_query_test)
 endif()
