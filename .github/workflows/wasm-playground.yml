@@ -46,6 +46,7 @@ jobs:
             -sENVIRONMENT=web \
             -sALLOW_MEMORY_GROWTH=1 \
             -sFORCE_FILESYSTEM=1 \
+            -sEXPORTED_RUNTIME_METHODS=FS \
             -sDISABLE_EXCEPTION_CATCHING=0 \
             -o docs/assets/kalyadb.js
 
