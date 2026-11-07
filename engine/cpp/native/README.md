@@ -9,9 +9,10 @@ The storage API can:
 - Create a `.kdb` file with a format signature and format version.
 - Append length-prefixed records.
 - Reopen a file and read records in insertion order.
+- Create named tables, list them, insert table records, and read them in insertion order.
 - Reject invalid headers, unsupported format versions, oversized records, and truncated records.
 
-The current record limit is 1 MiB. The file format is experimental and may change before a stable release. This prototype does not yet provide tables, queries, indexes, transactions, concurrency control, crash recovery, or encryption. Do not use it for important or sensitive data.
+The current record limit is 1 MiB. The file format is experimental and may change before a stable release. Table metadata and rows are currently stored as reserved records in the append-only log; this is an early prototype, not a final table/page format. The engine does not yet provide queries, indexes, transactions, concurrency control, crash recovery, or encryption. Do not use it for important or sensitive data.
 
 ## Build and test
 
