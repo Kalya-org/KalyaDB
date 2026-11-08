@@ -1,1 +1,56 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Architecture — KalyaDB</title><link rel="stylesheet" href="assets/style.css"></head><body><header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">K</span><span>Kalya<span class="muted">DB</span></span></a><nav><a href="architecture.html">Architecture</a><a href="roadmap.html">Roadmap</a><a href="playground.html">Playground</a><a class="github-link" href="https://github.com/Kalya-org/KalyaDB">GitHub ↗</a></nav></header><main class="content"><div class="eyebrow">TECHNICAL DESIGN</div><h1>Architecture</h1><div class="callout"><strong>Proposal, not implementation.</strong> The engine has not been built yet. This page describes an initial design that may change.</div><h2>Proposed components</h2><ol><li><strong>Public API</strong> — how applications open databases and request operations.</li><li><strong>Query layer</strong> — parsing, validation, and query planning.</li><li><strong>Execution layer</strong> — performs requested reads and writes.</li><li><strong>Storage engine</strong> — durable on-disk representation and persistence.</li><li><strong>Schema/catalog manager</strong> — tracks database structure and metadata.</li><li><strong>Index manager</strong> — maintains indexes for faster lookups.</li><li><strong>Transaction and recovery layer</strong> — defines atomicity, isolation, durability, and crash recovery.</li><li><strong>Backup and integrity tools</strong> — verification, export, backup, and restore.</li></ol><h2>Open engineering decisions</h2><p>The implementation language, query syntax, storage layout, page size, indexing strategy, and concurrency model are still undecided. We should prototype and measure before choosing.</p><h2>Integration target</h2><p>The first intended integration is local use inside the Kalya desktop application. This GitHub Pages site only publishes documentation; it does not host a database service.</p><p><a href="architecture.md">Read the full architecture notes in Markdown →</a></p></main><footer><span>© 2026 KalyaDB contributors</span><span>MIT License</span></footer></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Architecture — KalyaDB</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">K</span><span>Kalya<span class="muted">DB</span></span></a>
+    <nav><a href="architecture.html">Architecture</a><a href="roadmap.html">Roadmap</a><a href="playground.html">Playground</a><a class="github-link" href="https://github.com/Kalya-org/KalyaDB">GitHub ↗</a></nav>
+  </header>
+  <main class="content">
+    <div class="eyebrow">TECHNICAL DESIGN</div>
+    <h1>Platform architecture</h1>
+    <div class="callout"><strong>Target design.</strong> The relational engine is an experimental prototype. The service, authentication, realtime, and dashboard layers are planned, not implemented.</div>
+    <h2>How the pieces fit</h2>
+    <pre class="architecture-diagram">Applications and SDKs
+          |
+          v
+KalyaDB Service / API
+  |       |        |
+ Auth  Policies  Realtime
+          |
+          v
+Relational Engine (C++)
+  |       |        |
+ SQL   Catalog  Transactions
+          |
+          v
+     Database Storage</pre>
+    <h2>Relational engine</h2>
+    <p>The engine owns tables, schemas, typed columns, rows, constraints, relationships, SQL execution, transactions, and the on-disk format. The first relational milestone targets named columns, multiple values per row, and TEXT and INTEGER types.</p>
+    <h2>Service and APIs</h2>
+    <p>A separate service will provide controlled access to the engine through documented APIs. JavaScript/TypeScript and other client libraries will use the same service contracts. The service must validate requests and enforce access rules; database files must never be exposed directly.</p>
+    <h2>Platform services</h2>
+    <ul>
+      <li><strong>Authentication:</strong> user and service identities.</li>
+      <li><strong>Authorization:</strong> roles, grants, and row/table-level policies.</li>
+      <li><strong>Realtime:</strong> authorized notifications for committed changes.</li>
+      <li><strong>Dashboard:</strong> project, table, SQL, API, user, and operations management.</li>
+    </ul>
+    <h2>Build order</h2>
+    <ol>
+      <li>Relational engine and data integrity.</li>
+      <li>Transactions, storage recovery, and indexes.</li>
+      <li>Local database service and documented API.</li>
+      <li>Authentication, authorization, and SDKs.</li>
+      <li>Realtime, dashboard, and deployment tools.</li>
+    </ol>
+    <p><a href="architecture.md">Read the full architecture notes in Markdown →</a></p>
+  </main>
+  <footer><span>© 2026 KalyaDB contributors</span><span>MIT License</span></footer>
+</body>
+</html>
