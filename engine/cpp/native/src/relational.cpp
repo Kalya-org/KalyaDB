@@ -1,6 +1,7 @@
 #include "kalyadb/storage.hpp"
 
 #include <charconv>
+#include <cctype>
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
