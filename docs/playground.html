@@ -38,9 +38,9 @@
     <section class="sql-console" aria-label="SQL console">
       <div>
         <h2 class="sql-section-title">SQL editor</h2>
-        <textarea id="query" class="sql-editor" spellcheck="false" aria-label="SQL query editor">CREATE TABLE users;
-INSERT INTO users VALUES ('Ada');
-INSERT INTO users VALUES ('Grace Hopper');
+        <textarea id="query" class="sql-editor" spellcheck="false" aria-label="SQL query editor">CREATE TABLE users (name TEXT, age INTEGER);
+INSERT INTO users VALUES ('Ada', 25);
+INSERT INTO users VALUES ('Grace Hopper', 85);
 SELECT * FROM users;</textarea>
       </div>
       <div class="sql-toolbar">
