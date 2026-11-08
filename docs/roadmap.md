@@ -1,50 +1,79 @@
 # KalyaDB Roadmap
 
-**Status: planning.** These are proposed milestones, not delivery promises.
+This roadmap tracks the transition from an experimental native prototype into a relational database platform. A milestone is complete only when implementation, automated tests, and documentation are present.
 
-## 0 — Project foundation
+## 0.1.x — Experimental foundation
 
-- [x] Create the repository and baseline documentation.
-- [x] Add a project-specific ignore file and license.
-- [x] Publish the initial documentation source in `docs/`.
-- [ ] Agree on project requirements and non-goals.
-- [ ] Choose the implementation language and supported platforms.
+- [x] Repository and documentation foundation.
+- [x] C++ native storage prototype.
+- [x] Basic named-table and SQL prototypes.
+- [x] Native CMake/CTest workflow.
+- [x] WebAssembly playground.
+- [x] Browser-local persistence using IndexedDB.
+- [ ] Replace prototype record encoding with a documented, versioned relational catalog and row format.
 
-## 1 — Architecture and prototype
+## 0.2.0 — Relational database core
 
-- [ ] Specify the public API and data model.
-- [ ] Choose and document the on-disk format.
-- [ ] Build a disposable storage prototype.
-- [ ] Add automated tests for basic persistence and restart behaviour.
-- [ ] Record benchmark methodology and baseline results.
+- [ ] Named columns and table schemas.
+- [ ] Multiple values per row.
+- [ ] Initial data types: TEXT and INTEGER.
+- [ ] Type and column-count validation.
+- [ ] Structured query results with column names.
+- [ ] Schema-aware persistence and a safe migration/reset strategy for older prototype files.
+- [ ] Tests for reopen, validation failures, and persisted multi-column rows.
+- [ ] Update the WebAssembly playground to demonstrate relational SQL.
 
-## 2 — Core engine
+## 0.3.x — Relational integrity
 
-- [ ] Implement database creation and opening.
-- [ ] Implement basic read and write operations.
-- [ ] Add schema/catalog management.
-- [ ] Define and implement transaction behaviour.
-- [ ] Add integrity checks and recovery tests.
+- [ ] Primary keys and unique constraints.
+- [ ] Foreign keys and referential integrity.
+- [ ] NOT NULL and NULL semantics.
+- [ ] UPDATE and DELETE.
+- [ ] Basic WHERE filtering and ordering.
+- [ ] Joins across related tables.
 
-## 3 — Querying and indexes
+## 0.4.x — Storage reliability
 
-- [ ] Select a query syntax.
-- [ ] Implement parsing and validation.
-- [ ] Add query execution.
-- [ ] Add indexes and measure their performance.
+- [ ] Versioned page/record storage design.
+- [ ] Transactions and rollback.
+- [ ] Crash recovery and integrity checking.
+- [ ] Indexes and query-planning foundations.
+- [ ] Backup, restore, and migration tools.
+- [ ] Concurrency and locking model.
 
-## 4 — Kalya integration
+## 0.5.x — Local database service
 
-- [ ] Define the Electron integration boundary.
-- [ ] Add a safe application-facing API.
-- [ ] Test concurrent access, shutdown, and crash recovery.
-- [ ] Document backup, restore, and migration workflows.
+- [ ] Define a stable engine interface.
+- [ ] Build a local service process around the engine.
+- [ ] Add a documented HTTP API.
+- [ ] Add connection management, request validation, and safe parameter handling.
+- [ ] Add JavaScript/TypeScript client SDK.
+- [ ] Integrate the service with the Kalya desktop application.
 
-## 5 — Release readiness
+## 0.6.x — Platform services
 
-- [ ] Complete security and data-integrity reviews.
-- [ ] Publish format and API documentation.
-- [ ] Establish compatibility and migration policies.
-- [ ] Create repeatable release builds and test suites.
+- [ ] Authentication and service credentials.
+- [ ] Roles, grants, and row/table-level authorization policies.
+- [ ] API key management and secret rotation.
+- [ ] Audit logs and service health/metrics.
+- [ ] Realtime events for committed, authorized changes.
 
-A milestone should only be marked complete when its implementation, tests, and documentation are present.
+## 0.7.x — Dashboard and operations
+
+- [ ] Project and database management.
+- [ ] Table editor and relationship visualizer.
+- [ ] SQL editor and query results.
+- [ ] API explorer and SDK guides.
+- [ ] User, role, and policy management.
+- [ ] Backup, restore, logs, and monitoring views.
+
+## 1.0.0 — Production-readiness review
+
+- [ ] Independent security and data-integrity review.
+- [ ] Documented durability, isolation, and recovery guarantees.
+- [ ] Load, stress, and failure testing.
+- [ ] Stable storage and API compatibility policies.
+- [ ] Supported deployment and upgrade procedures.
+- [ ] Complete documentation and release process.
+
+The roadmap is a build sequence, not a promise that every feature exists today. Avoid using valuable or sensitive data until the 1.0.0 readiness requirements have been met.
