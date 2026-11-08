@@ -1,1 +1,43 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Roadmap — KalyaDB</title><link rel="stylesheet" href="assets/style.css"></head><body><header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">K</span><span>Kalya<span class="muted">DB</span></span></a><nav><a href="architecture.html">Architecture</a><a href="roadmap.html">Roadmap</a><a href="playground.html">Playground</a><a class="github-link" href="https://github.com/Kalya-org/KalyaDB">GitHub ↗</a></nav></header><main class="content"><div class="eyebrow">WHAT COMES NEXT</div><h1>Roadmap</h1><div class="callout">This is a proposed sequence of milestones, not a release schedule. Items are only complete when implementation, tests, and documentation exist.</div><h2>01 · Foundation</h2><ul><li>Agree on requirements and non-goals.</li><li>Choose implementation language and supported platforms.</li><li>Write down the public API and data model.</li></ul><h2>02 · Storage prototype</h2><ul><li>Choose and document the on-disk format.</li><li>Build a disposable storage prototype.</li><li>Test persistence, restart behaviour, and corruption handling.</li></ul><h2>03 · Core engine</h2><ul><li>Database creation and opening.</li><li>Basic reads and writes.</li><li>Schema/catalog management.</li><li>Transactions and recovery.</li></ul><h2>04 · Querying and indexes</h2><ul><li>Select query syntax and implement parsing.</li><li>Add query execution and validation.</li><li>Implement indexes and benchmark them.</li></ul><h2>05 · Kalya integration</h2><ul><li>Define the Electron integration boundary.</li><li>Test shutdown, concurrent access, and crash recovery.</li><li>Document backups, restores, and migrations.</li></ul><p><a href="roadmap.md">Read the full roadmap in Markdown →</a></p></main><footer><span>© 2026 KalyaDB contributors</span><span>MIT License</span></footer></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Roadmap — KalyaDB</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">K</span><span>Kalya<span class="muted">DB</span></span></a>
+    <nav><a href="architecture.html">Architecture</a><a href="roadmap.html">Roadmap</a><a href="playground.html">Playground</a><a class="github-link" href="https://github.com/Kalya-org/KalyaDB">GitHub ↗</a></nav>
+  </header>
+  <main class="content">
+    <div class="eyebrow">WHAT COMES NEXT</div>
+    <h1>Roadmap</h1>
+    <div class="callout">Milestones are only complete when code, tests, and documentation exist. Planned platform features are not available yet.</div>
+    <h2>0.2.0 · Relational core</h2>
+    <ul>
+      <li>Named columns and table schemas.</li>
+      <li>Multiple values per row.</li>
+      <li>TEXT and INTEGER data types.</li>
+      <li>Type and column-count validation.</li>
+      <li>Structured results with column names.</li>
+      <li>Schema-aware persistence and playground updates.</li>
+    </ul>
+    <h2>0.3.x · Relational integrity</h2>
+    <ul><li>Primary and foreign keys.</li><li>Unique, NOT NULL, and NULL constraints.</li><li>UPDATE, DELETE, filters, and joins.</li></ul>
+    <h2>0.4.x · Reliability</h2>
+    <ul><li>Transactions and rollback.</li><li>Crash recovery and integrity checks.</li><li>Indexes, backups, and restore.</li></ul>
+    <h2>0.5.x · Database service</h2>
+    <ul><li>Local service process and stable engine interface.</li><li>Documented HTTP API.</li><li>JavaScript/TypeScript SDK.</li><li>Kalya desktop integration.</li></ul>
+    <h2>0.6.x · Platform services</h2>
+    <ul><li>Authentication and credentials.</li><li>Roles and authorization policies.</li><li>Audit logs and realtime events.</li></ul>
+    <h2>0.7.x · Dashboard</h2>
+    <ul><li>Project and database management.</li><li>Table editor and relationship browser.</li><li>SQL editor, API explorer, users, and policies.</li></ul>
+    <h2>1.0.0 · Production readiness</h2>
+    <ul><li>Security and data-integrity review.</li><li>Documented durability and recovery guarantees.</li><li>Load, stress, and failure testing.</li><li>Stable compatibility and deployment policies.</li></ul>
+    <p><a href="roadmap.md">Read the full roadmap in Markdown →</a></p>
+  </main>
+  <footer><span>© 2026 KalyaDB contributors</span><span>MIT License</span></footer>
+</body>
+</html>
