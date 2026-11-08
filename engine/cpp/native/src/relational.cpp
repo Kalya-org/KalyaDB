@@ -169,7 +169,7 @@ std::vector<std::vector<std::string>> read_rows(
         std::vector<std::string> row;
         for (std::size_t i = 0; i < columns.size(); ++i) {
             std::uint32_t size = 0;
-            if (!take_u32(record, offset, size) || offset + size > record.size()) {
+            if (!take_u32(record, offset, size) || size > record.size() - offset) {
                 throw std::runtime_error("Corrupt row data.");
             }
             row.push_back(record.substr(offset, size));
