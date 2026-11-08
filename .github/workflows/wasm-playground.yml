@@ -60,5 +60,6 @@ jobs:
             echo "WebAssembly output is already up to date."
           else
             git commit -m "Build KalyaDB WebAssembly playground"
+            git pull --rebase origin main
             git push
           fi
