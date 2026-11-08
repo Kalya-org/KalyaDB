@@ -36,6 +36,7 @@ jobs:
             engine/cpp/native/src/version.cpp \
             engine/cpp/native/src/storage.cpp \
             engine/cpp/native/src/tables.cpp \
+            engine/cpp/native/src/relational.cpp \
             engine/cpp/native/src/query.cpp \
             engine/cpp/native/src/wasm_api.cpp \
             -I engine/cpp/native/include \
