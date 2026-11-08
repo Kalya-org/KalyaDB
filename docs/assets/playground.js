@@ -9,18 +9,15 @@ const output = document.querySelector("#output");
 const DATABASE_PATH = "/kalya-playground.kdb";
 const IDB_NAME = "KalyaDBPlayground";
 const IDB_STORE = "databases";
-const IDB_KEY = "default";
+const IDB_KEY = "relational-v2";
 let engine = null;
 let persistenceReady = false;
 
-const exampleSql = `CREATE TABLE users;
-INSERT INTO users VALUES ('Ada');
-INSERT INTO users VALUES ('Grace Hopper');
-SELECT * FROM users;`;
+const exampleSql = "CREATE TABLE users (name TEXT, age INTEGER);\nINSERT INTO users VALUES ('Ada', 25);\nINSERT INTO users VALUES ('Grace Hopper', 85);\nSELECT * FROM users;";
 
 function setStatus(message, kind = "") {
   status.textContent = message;
-  status.className = `sql-status ${kind}`.trim();
+  status.className = ("sql-status " + kind).trim();
 }
 
 function openDatabase() {
@@ -65,27 +62,31 @@ async function persistDatabase() {
   await withStore("readwrite", store => store.put(bytes, IDB_KEY));
 }
 
-function renderRows(rows) {
+function renderRows(columns, rows) {
   output.replaceChildren();
-  if (!rows || rows.length === 0) {
-    output.textContent = "No rows returned.";
+  if (!columns || columns.length === 0) {
+    output.textContent = "No query results. Run SELECT * FROM table_name to display rows.";
     return;
   }
 
   const table = document.createElement("table");
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
-  const heading = document.createElement("th");
-  heading.textContent = "value";
-  headRow.append(heading);
+  for (const name of columns) {
+    const heading = document.createElement("th");
+    heading.textContent = name;
+    headRow.append(heading);
+  }
   head.append(headRow);
 
   const body = document.createElement("tbody");
-  for (const value of rows) {
+  for (const values of rows) {
     const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.textContent = value;
-    row.append(cell);
+    for (const value of values) {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.append(cell);
+    }
     body.append(row);
   }
 
@@ -136,12 +137,13 @@ async function runSql() {
       return;
     }
 
+    let lastColumns = [];
     let lastRows = [];
     let selectedRows = false;
     for (let i = 0; i < statements.length; i += 1) {
       const result = engine.executeSql(statements[i]);
       if (!result.ok) {
-        setStatus(`Statement ${i + 1} failed: ${result.message}`, "error");
+        setStatus("Statement " + (i + 1) + " failed: " + result.message, "error");
         output.textContent = "Execution stopped at the first error. Earlier statements in this script may already have completed.";
         return;
       }
@@ -150,21 +152,22 @@ async function runSql() {
           await persistDatabase();
         } catch (error) {
           persistenceReady = false;
-          setStatus(`SQL ran, but browser persistence failed: ${error.message}. Data may be lost on reload.`, "error");
+          setStatus("SQL ran, but browser persistence failed: " + error.message + ". Data may be lost on reload.", "error");
         }
       }
       if (/^\s*SELECT\b/i.test(statements[i])) {
+        lastColumns = result.columns;
         lastRows = result.rows;
         selectedRows = true;
       }
     }
 
-    if (selectedRows) renderRows(lastRows);
+    if (selectedRows) renderRows(lastColumns, lastRows);
     else output.textContent = "Statements completed. Run a SELECT statement to display rows.";
     if (persistenceReady) {
-      setStatus(`${statements.length} statement(s) executed and saved in this browser.`, "success");
+      setStatus(statements.length + " statement(s) executed and saved in this browser.", "success");
     } else {
-      setStatus(`${statements.length} statement(s) executed in temporary memory only.`, "error");
+      setStatus(statements.length + " statement(s) executed in temporary memory only.", "error");
     }
   } catch (error) {
     setStatus(error.message || "Unexpected engine error.", "error");
@@ -191,10 +194,10 @@ resetButton.addEventListener("click", async () => {
   try {
     engine.resetDatabase();
     if (persistenceReady) await persistDatabase();
-    renderRows([]);
+    renderRows([], []);
     setStatus("Database reset. The empty database has been saved.", "success");
   } catch (error) {
-    setStatus(`Database reset, but saving failed: ${error.message}`, "error");
+    setStatus("Database reset, but saving failed: " + error.message, "error");
   } finally {
     resetButton.disabled = false;
   }
@@ -214,11 +217,11 @@ try {
     const restored = await restoreDatabase();
     persistenceReady = true;
     setStatus(restored
-      ? "KalyaDB ready. Your saved browser database has been restored."
-      : "KalyaDB ready. Browser persistence is enabled; run SQL to create saved data.", "success");
+      ? "KalyaDB 0.2.0 ready. Your saved relational database has been restored."
+      : "KalyaDB 0.2.0 ready. Browser persistence is enabled; run SQL to create saved data.", "success");
   } catch (storageError) {
     persistenceReady = false;
-    setStatus(`KalyaDB ready, but browser storage is unavailable: ${storageError.message}. Data will be temporary.`, "error");
+    setStatus("KalyaDB ready, but browser storage is unavailable: " + storageError.message + ". Data will be temporary.", "error");
   }
   runButton.disabled = false;
   runButton.textContent = "Run SQL";
