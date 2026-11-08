@@ -32,8 +32,8 @@
   <main class="content">
     <div class="eyebrow">EXPERIMENTAL SQL CONSOLE</div>
     <h1>KalyaDB Playground</h1>
-    <p>Write and run SQL against the experimental C++ KalyaDB engine compiled to WebAssembly. Commands run locally in this browser tab.</p>
-    <div class="callout">⚠ Prototype: this playground supports one text value per row. Your database is saved in this browser using IndexedDB and normally survives page reloads. Clearing this site's browser data, using private browsing, or changing browsers/devices can remove or separate the saved database. Do not enter sensitive information.</div>
+    <p>Write and run relational SQL against the experimental KalyaDB engine compiled to WebAssembly. Commands run locally in this browser.</p>
+    <div class="callout">⚠ Experimental prototype: this playground supports table schemas, multiple columns, TEXT and INTEGER values. The 0.2.0 relational playground uses a fresh browser-local database; earlier prototype data is not migrated. Data is saved in this browser using IndexedDB and normally survives reloads, but clearing browser data or changing browsers/devices can remove or separate it. Do not enter sensitive information.</div>
 
     <section class="sql-console" aria-label="SQL console">
       <div>
@@ -54,7 +54,7 @@ SELECT * FROM users;</textarea>
         <h2 class="sql-section-title">Results</h2>
         <div id="output" class="sql-output" aria-live="polite">Waiting for a SQL command.</div>
       </div>
-      <p class="sql-note">Supported commands: CREATE TABLE name; INSERT INTO name VALUES ('text'); SELECT * FROM name;. Use doubled apostrophes inside text, like 'O''Reilly'. Press Ctrl+Enter to run the script.</p>
+      <p class="sql-note">Supported commands: CREATE TABLE name (column TEXT, count INTEGER); INSERT INTO name VALUES ('text', 42); SELECT * FROM name;. Use doubled apostrophes inside text, like 'O''Reilly'. Press Ctrl+Enter to run the script.</p>
     </section>
   </main>
   <footer><span>© 2026 KalyaDB contributors</span><span>MIT License</span></footer>
